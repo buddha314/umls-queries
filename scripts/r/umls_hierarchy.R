@@ -1,4 +1,5 @@
 setwd("/Users/buddha/github/buddha314/umls-queries/scripts/r")
+img <- "path_examples.Rdata"
 library("igraph")
 chrel <- "child_rels.txt"
 
@@ -18,13 +19,28 @@ f <- unique(data.frame(d$cui1, d$cui2, d$rel))
 g <- graph.data.frame(d = f, directed=TRUE)
 # Save some memory
 rm(f)
+save.image(img)
+
 
 # Now, what you want, from this post: https://lists.nongnu.org/archive/html/igraph-help/2010-05/msg00093.html
 leaves <- V(g)[degree(g, mode="out")==0]
 roots <- V(g)[degree(g, mode="in")==0]
 
+# iGraph likes the integer id of the node, rather than the CUI name.
+root_ids <- which(V(g) %in% roots)
+leaf_ids <- which(V(g) %in% leaves)
+
 length(leaves)
 length(roots)
+save.image(img)
 
 # What do you want to do next?
+
+# Get all paths so you can take the max later.
+p1 <- all_simple_paths(g, from=1, to=leaf_ids, mode=c("out"))
+
+## Not run, this is where R barfs
+Sys.time()
+p1 <- all_simple_paths(g, from=root_ids, to=leaf_ids, mode=c("out"))
+Sys.time()
 
